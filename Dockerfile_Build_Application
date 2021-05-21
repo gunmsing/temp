@@ -29,4 +29,5 @@ COPY ./myweb ./
 #Building application
 RUN mvn clean install
 
+#Entrypoint
 CMD ["ls", "-l"]
