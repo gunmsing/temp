@@ -27,3 +27,5 @@ COPY --from=myweb /opt/myapplication/target/myweb-0.12.0.war /opt/tomcat/webapps
 
 #Starting tomcat server
 CMD ["/opt/tomcat/bin/catalina.sh", "run"]
+
+Hello
