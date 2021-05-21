@@ -1,0 +1,29 @@
+FROM centos:7
+
+#Set Environment Variables
+ENV JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk
+ENV Tomcat_Version=8.5.66
+EXPOSE 8080
+
+#Install dependencies
+RUN yum install -y wget
+
+#Install Java
+RUN yum install java-1.8.0-openjdk-devel -y
+
+#Install Tomcat
+RUN wget http://www-eu.apache.org/dist/tomcat/tomcat-8/v${Tomcat_Version}/bin/apache-tomcat-${Tomcat_Version}.tar.gz \
+    && tar xvfz apache-tomcat-${Tomcat_Version}.tar.gz \
+    && rm -f apache-tomcat-${Tomcat_Version}.tar.gz \
+    && mkdir /opt/tomcat \
+    && mv apache-tomcat-${Tomcat_Version}/* /opt/tomcat/ \
+    && rm -rf apache-tomcat-8.5.66
+
+ADD ./context.xml /opt/tomcat/webapps/manager/META-INF/
+ADD ./tomcat-users.xml /opt/tomcat/conf/
+
+#Copy war file
+COPY --from=myweb /opt/myapplication/target/myweb-0.12.0.war /opt/tomcat/webapps/mywar.war
+
+#Starting tomcat server
+CMD ["/opt/tomcat/bin/catalina.sh", "run"]

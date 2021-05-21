@@ -1,0 +1,30 @@
+FROM centos:7 as myweb
+
+#Set Environment Variables
+ENV JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk
+ENV Mvn_Version=3.6.3
+ENV M2_HOME=/usr/local/apache-maven/apache-maven-${Mvn_Version}
+ENV M2=${M2_HOME}/bin
+ENV PATH=$PATH:$M2
+
+#Install dependencies
+RUN yum install -y wget
+
+#Install Java
+RUN yum install java-1.8.0-openjdk-devel -y
+
+#Install Maven
+RUN wget https://downloads.apache.org/maven/maven-3/${Mvn_Version}/binaries/apache-maven-${Mvn_Version}-bin.tar.gz \
+    && tar xvfz apache-maven-${Mvn_Version}-bin.tar.gz \
+    && mkdir /usr/local/apache-maven/apache-maven-${Mvn_Version} -p \
+    && mv apache-maven-${Mvn_Version}/* /usr/local/apache-maven/apache-maven-${Mvn_Version}/ \
+    && rm -rf apache-maven-${Mvn_Version} \
+    && rm -f apache-maven-${Mvn_Version}-bin.tar.gz
+
+#Adding application
+RUN mkdir -p /opt/myapplication
+WORKDIR /opt/myapplication
+COPY ./myweb ./
+
+#Building application
+RUN mvn clean install
